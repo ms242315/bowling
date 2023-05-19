@@ -31,13 +31,7 @@ class Bowling
     @scores.each.with_index(1) do |score, index|
       # 最終フレーム以外でのストライクなら、スコアにボーナスを含めて合計する
       if strike?(score) && not_last_frame?(index)
-        # 次のフレームもストライクで、なおかつ最終フレーム以外なら、
-        # もう一つ次のフレームの一投目をボーナスの対象にする
-        if strike?(@scores[index]) && not_last_frame?(index + 1)
-          @total_score += 20 + @scores[index + 1].first
-        else
-          @total_score += 10 + @scores[index].inject(:+)
-        end
+        @total_score += calc_strike_bonus(index)
       # 最終フレーム以外でのスペアなら、スコアにボーナスを含めて合計する
       elsif spare?(score) && not_last_frame?(index)
         @total_score += calc_spare_bonus(index)
@@ -66,5 +60,16 @@ class Bowling
   # ストライクかどうか判定する
   def strike?(score)
     score.first == 10
+  end
+
+  # ストライクボーナスを含んだ値でスコアを計算する
+  def calc_strike_bonus(index)
+    # 次のフレームもストライクで、なおかつ最終フレーム以外なら
+    # もう一つ次のフレームの一投目をボーナスの対象にする
+    if strike?(@scores[index]) && not_last_frame?(index + 1)
+      20 + @scores[index + 1].first
+    else
+      10 + @scores[index].inject(:+)
+    end
   end
 end
